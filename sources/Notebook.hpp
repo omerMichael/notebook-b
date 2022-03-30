@@ -1,37 +1,64 @@
 #pragma once
 #include <string>
 #include "Direction.hpp"
+#include <exception>
+#include <map>
 #include <vector>
 
+using namespace std;
+
+const std::string RESET       = "\033[0m";       /* Default White*/
+const std::string BLACK       = "\033[30m";      /* Black */
+const std::string RED         = "\033[31m";      /* Red */
+const std::string YELLOW      = "\033[33m";      /* Yellow */
+const std::string BLUE        = "\033[34m";      /* Blue */
+const std::string GREEN       = "\033[32m";      /* Green */
+const std::string MAGENTA     = "\033[35m";      /* Magenta */
+const std::string BOLDMAGENTA = "\033[1m\033[35m";      /* Bold Magenta */
+const std::string BOLDCYAN    = "\033[1m\033[36m";      /* Bold Cyan */
+
 namespace ariel {
+    #define NOTEBOOK_LEN 100
+    #define PRINTABLE_MIN 32
+    #define PRINTABLE_MAX 126
     
     class Notebook {
 
     private:
 
-        /*short*/ int MAX_COLS = 100;
-        //int MAX_PAGE_OFFSET = 20;
-        //int MAX_ROW_OFFSET = 20;
-        //int INITIAL_SIZE = 1;
-        int MAX_CURR_PAGE = 1;
-        int MAX_CURR_ROW = 1;
+        class Page {
+            public:
+                map<int, vector<char>> _page;
+            
+                int MAX_ROW = 0;
+                int MAX_COL = 0;
+                int MIN_ROW = INT8_MAX;
+                int MIN_COL = NOTEBOOK_LEN;
+                ~Page();
+        };
+        
+        map<int, Page*> notebook;
 
-        // vector<vector<char>> my_page;
-        // How to present the rest of th pages
-        vector<vector<char>> one_page;
+        // Help methods:
+        Page *write_horizontal(Page* page, const int &row, int col, const int &len, const string& str);
+        Page *write_vertical(Page* page, const int &row, int col, const int &len, const string& str);
+        bool valid_page_args(ariel::Notebook::Page* p, int row, int col, Direction dir, int len);
 
     public:
-
+    
         Notebook();
         ~Notebook();
 
-        void write(int page, int row, int col, Direction dir, std::string str);
+        void write(const int &page, const int &row, const int &col, const Direction &dir, const string &str);
 
-        std::string read(int page, int row, int col, Direction dir, int length);
+        string read(const int &page, const int &row, const int &col, const Direction &dir, const int &length);
 
-        void erase(int page, int row, int col, Direction dir, int length);
+        void erase(const int &page, const int &row, const int &col, const Direction &dir, const int &length);
 
-        void show(int page);
+        void show(const int &page);
+
+        // Help methods:
+        Page *getPage(const int &page_num);
     };
 
 }
